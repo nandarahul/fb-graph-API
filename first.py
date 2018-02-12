@@ -2,7 +2,7 @@ import requests
 
 HOST = "https://graph.facebook.com"
 VERSION = "v2.12"
-ACCESS_TOKEN = "ENTER YOUR TOKEN HERE"
+ACCESS_TOKEN = "Enter-Token-here"
 
 
 def get_object_likes(obj_id, user_react_count_dict):
@@ -19,7 +19,7 @@ def get_object_likes(obj_id, user_react_count_dict):
                 user_react_count_dict[reactor_info['id']] += 1
             else:
                 user_react_count_dict[reactor_info['id']] = 1
-        print(response_dict['data'])
+        #print(response_dict['data'])
         if 'paging' not in response_dict or 'next' not in response_dict['paging']:
             break
         url = response_dict['paging']['next']
@@ -27,6 +27,7 @@ def get_object_likes(obj_id, user_react_count_dict):
 
 def get_top_friends(object_types):
     """
+    Some of the valid object_types: 'posts', 'feed', 'photos'
     Find reaction count from people on your fb posts, photos, etc (object_types param).
     Returns a list of tuples (user_id and reaction count) ranked from highest reaction count to lowest.
     """
@@ -38,6 +39,9 @@ def get_top_friends(object_types):
         while True:
             r = requests.get(url, params=param_dict)
             response_dict = r.json()
+            if 'data' not in response_dict:
+                print(response_dict)
+                break
             for node_info in response_dict['data']:
                 get_object_likes(node_info['id'], user_react_count_dict)
             #print(response_dict['data'])
@@ -72,7 +76,7 @@ def analyse_reactions(user_react_count_list):
 
 
 if __name__ == "__main__":
-    user_react_count_list = get_top_friends(['posts', 'photos'])
+    user_react_count_list = get_top_friends(['feed'])
     analyse_reactions(user_react_count_list)
 
 
